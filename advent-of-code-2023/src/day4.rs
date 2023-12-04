@@ -4,9 +4,9 @@ use crate::util::read_file;
 
 pub fn day4_1() {
     let file = read_file("inputs/day4.txt");
-    let instruction: Vec<&str> = file.lines().collect();
+    let games: Vec<&str> = file.lines().collect();
     let mut total = 0;
-    for (_, line) in instruction.iter().enumerate() {
+    for (_, line) in games.iter().enumerate() {
         let line_cut = String::from(&line[line.find(':').unwrap()+2..]);
         let nums: Vec<&str> = line_cut.split('|').collect();
         let winning_nums = nums[0].trim().replace("  ", " ");
@@ -27,15 +27,15 @@ pub fn day4_1() {
 
 pub fn day4_2() {
     let file = read_file("inputs/day4.txt");
-    let instruction: Vec<&str> = file.lines().collect();
+    let games: Vec<&str> = file.lines().collect();
     let mut total = 0;
     let mut cards_dict: HashMap<usize, usize> = HashMap::new();
 
-    for i in 0..instruction.len() {
+    for i in 0..games.len() {
         cards_dict.insert(i, 1);
     }
     
-    for (r, line) in instruction.iter().enumerate() {
+    for (r, line) in games.iter().enumerate() {
         for _ in 0..cards_dict[&r] {
             let line_cut = String::from(&line[line.find(':').unwrap()+2..]);
             let nums: Vec<&str> = line_cut.split('|').collect();
