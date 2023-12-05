@@ -1,4 +1,4 @@
-use std::{collections::HashMap, time::Instant};
+use std::{collections::HashMap, time::Instant, cmp::Ordering};
 
 use crate::util::read_file;
 
@@ -115,31 +115,52 @@ pub fn day5_2() {
     }
 
     let mut min_seed: i64 = i64::MAX;
-    let now = Instant::now();
+    // let now = Instant::now();
     for seed_range in seeds {
-        // print!("seed {}", seed);
-        println!("seed_range {}", seed_range.end-seed_range.start);
-        for (i, seed) in seed_range.enumerate() {
-            if i % 1000000 == 0 {
-                println!("processing ... [{i}]");
-            }   
-            let mut seed_num = seed;
-            for (_, map) in maps.iter().enumerate() {
-                for (range, offset) in map {
-                    if range.contains(&seed_num) {
-                        seed_num += offset;
-                        break;
-                    }
+        let temp_val = get_range(seed_range.clone(), &maps, 0);
+        if temp_val < min_seed {
+            min_seed = temp_val;
+        }
+    }
+    // println!("time taken {}us", now.elapsed().as_micros());
+    print!("the result is {}", min_seed);
+}
+
+fn get_range(range: std::ops::Range<i64>, maps: &Vec<HashMap<std::ops::Range<i64>, i64>>, index: usize) -> i64 {
+    let mut start = range.start;
+    let end = range.end;
+    if index >= maps.len() {
+        return range.start
+    }
+    let mut val = i64::MAX;
+    let map = &maps[index];
+    while start < end {
+        let mut matched = false;
+        for (map_range, offset) in map {
+            if map_range.contains(&start) {
+                matched = true;
+                let new_end = match map_range.end.cmp(&end) {
+                    Ordering::Less => map_range.end+offset,
+                    Ordering::Equal | Ordering::Greater => end+offset 
+                };
+                let temp_val = get_range(start+offset..new_end, maps, index+1);
+                if map_range.end.cmp(&end) == Ordering::Less {
+                    start = map_range.end;
+                } else {
+                    start = end;
                 }
-                // print!("-[{}]->{}", i, seed_num);
-            }
-            if seed_num < min_seed {
-                min_seed = seed_num;
+                if temp_val < val {
+                    val = temp_val;
+                }
             }
         }
-        println!("time taken {}", now.elapsed().as_millis()/1000);
-        // println!();
+        if !matched {
+            let temp_val = get_range(range.clone(), maps, index+1);
+            if temp_val < val {
+                val = temp_val;
+            }
+            break;
+        }
     }
-    println!("time taken {}", now.elapsed().as_millis()/1000);
-    print!("the result is {}", min_seed);
+    val
 }
