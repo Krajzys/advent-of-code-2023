@@ -1,4 +1,4 @@
-use std::{collections::HashMap, time::Instant, cmp::Ordering};
+use std::{collections::HashMap, cmp::Ordering};
 
 use crate::util::read_file;
 
@@ -117,7 +117,7 @@ pub fn day5_2() {
     let mut min_seed: i64 = i64::MAX;
     // let now = Instant::now();
     for seed_range in seeds {
-        let temp_val = get_range(seed_range.clone(), &maps, 0);
+        let temp_val = get_min_from_range(seed_range.clone(), &maps, 0);
         if temp_val < min_seed {
             min_seed = temp_val;
         }
@@ -126,7 +126,7 @@ pub fn day5_2() {
     print!("the result is {}", min_seed);
 }
 
-fn get_range(range: std::ops::Range<i64>, maps: &Vec<HashMap<std::ops::Range<i64>, i64>>, index: usize) -> i64 {
+fn get_min_from_range(range: std::ops::Range<i64>, maps: &Vec<HashMap<std::ops::Range<i64>, i64>>, index: usize) -> i64 {
     let mut start = range.start;
     let end = range.end;
     if index >= maps.len() {
@@ -136,14 +136,18 @@ fn get_range(range: std::ops::Range<i64>, maps: &Vec<HashMap<std::ops::Range<i64
     let map = &maps[index];
     while start < end {
         let mut matched = false;
+        let mut min_start = i64::MAX;
         for (map_range, offset) in map {
+            if map_range.start < min_start && map_range.start > start {
+                min_start = map_range.start;
+            }
             if map_range.contains(&start) {
                 matched = true;
                 let new_end = match map_range.end.cmp(&end) {
                     Ordering::Less => map_range.end+offset,
                     Ordering::Equal | Ordering::Greater => end+offset 
                 };
-                let temp_val = get_range(start+offset..new_end, maps, index+1);
+                let temp_val = get_min_from_range(start+offset..new_end, maps, index+1);
                 if map_range.end.cmp(&end) == Ordering::Less {
                     start = map_range.end;
                 } else {
@@ -155,11 +159,23 @@ fn get_range(range: std::ops::Range<i64>, maps: &Vec<HashMap<std::ops::Range<i64
             }
         }
         if !matched {
-            let temp_val = get_range(range.clone(), maps, index+1);
-            if temp_val < val {
-                val = temp_val;
+            if start < min_start {
+                let temp_val = get_min_from_range(start..min_start, maps, index+1);
+                if temp_val < val {
+                    val = temp_val;
+                }
+                let temp_val = get_min_from_range(min_start..end, maps, index);
+                if temp_val < val {
+                    val = temp_val;
+                }
+                break;
+            } else {
+                let temp_val = get_min_from_range(range.clone(), maps, index+1);
+                if temp_val < val {
+                    val = temp_val;
+                }
+                break;
             }
-            break;
         }
     }
     val
