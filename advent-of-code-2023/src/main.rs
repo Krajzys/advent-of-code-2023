@@ -7,12 +7,20 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
+mod day7;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
     match args.get(1) {
-        None => panic!("no arguments provided"),
+        None => {
+            println!("Usage: {} day-part <filename>\nExample: {} 5-1", args.get(0).unwrap(), args.get(0).unwrap());
+            return;
+        }
         Some(value) => {
+            let filename = match args.get(2) {
+                None => String::from(""),
+                Some(filename) => String::from(filename)
+            };
             match value.as_str() {
                 "1-1" => day1::day1_1(),
                 "1-2" => day1::day1_2(),
@@ -26,6 +34,8 @@ fn main() {
                 "5-2" => day5::day5_2(),
                 "6-1" => day6::day6_1(),
                 "6-2" => day6::day6_2(),
+                "7-1" => day7::day7_1(filename),
+                "7-2" => day7::day7_2(filename),
                 _ => panic!("unknown argument was provided")
             }
         }
