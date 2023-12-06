@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use crate::util::read_file;
 
 pub fn day6_1() {
@@ -24,6 +26,7 @@ pub fn day6_1() {
     }
 
     let mut total: usize = 1;
+    let time = Instant::now();
     for (time, distance) in core::iter::zip(times, distances) {
         let mut wins = 0;
         for pressed in 1..time {
@@ -35,7 +38,7 @@ pub fn day6_1() {
         total *= wins;
     }
 
-    print!("the result is {}", total);
+    print!("the result is {} [time taken {}us]", total, time.elapsed().as_micros());
 }
 
 pub fn day6_2() {
@@ -58,16 +61,18 @@ pub fn day6_2() {
     }
 
     let mut total: usize = 1;
+    let time = Instant::now();
     for (time, distance) in core::iter::zip(times, distances) {
         let mut wins = 0;
         for pressed in 1..time {
             let curr_distance = pressed*(time-pressed);
             if curr_distance > distance {
-                wins += 1;
+                wins = time-(pressed*2)+1;
+                break;
             }
         }
         total *= wins;
     }
 
-    print!("the result is {}", total);
+    print!("the result is {} [time taken {}ms]", total, time.elapsed().as_millis());
 }
