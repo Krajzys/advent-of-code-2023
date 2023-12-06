@@ -6,6 +6,7 @@ mod day2;
 mod day3;
 mod day4;
 mod day5;
+mod day6;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -23,6 +24,8 @@ fn main() {
                 "4-2" => day4::day4_2(),
                 "5-1" => day5::day5_1(),
                 "5-2" => day5::day5_2(),
+                "6-1" => day6::day6_1(),
+                "6-2" => day6::day6_2(),
                 _ => panic!("unknown argument was provided")
             }
         }
