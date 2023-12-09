@@ -72,85 +72,46 @@ pub fn day8_2(filename: String) {
     // go thorugh the map according to the steps_list, starting with all the nodes that end with A, until we reach ZZZ
     let mut curr_nodes: Vec<&str> = map.clone().into_keys().filter(|key| key.ends_with('A')).collect();
     let time = Instant::now();
-    // fastest for now
-    let mut curr_step: usize = 0;
-    for go in steps_list.chars().cycle() {
-        for key in &mut curr_nodes {
-            let paths = map.get(key).expect("key should be L or R");
+
+    // find the least common multiple of all the loop lengths 
+    let mut first_end_occur: Vec<usize> = Vec::new();
+    for key in &mut curr_nodes {
+        let mut curr_step: usize = 0;
+        for go in steps_list.chars().cycle() {
+            let paths = map.get(key).unwrap();
             *key = match go {
                 'L' => paths.0,
                 'R' => paths.1,
                 _ => panic!("Wrong character")
             };
-        }
-        if curr_step % 10000000 == 0 {
-            println!("curr step {curr_step}... [time taken {}ms]", time.elapsed().as_millis());
-        }
-        
-        curr_step += 1;
-        if curr_nodes.iter().all(|key| key.ends_with('Z')) {
-            break;
+            curr_step += 1;
+            if key.ends_with('Z') {
+                first_end_occur.push(curr_step);
+                break;
+            }
         }
     }
-
-    // idea v3 - find a loop (such a sequence that after some number of moves we are at the same node and the same step position) for all the starting positions
-    // find the least common multiple of all the loop lengths 
-
-    // interesting idea but slow
-    // let mut max_iters: Vec<usize> = Vec::from_iter(std::iter::repeat(0).take(curr_nodes.len()));
-    // while !max_iters.iter().all(|e| e == max_iters.get(0).unwrap()) || max_iters.iter().all(|e| *e == 0) {
-    //     let mut curr_map: usize = 0;
-    //     for key in &mut curr_nodes {
-    //         let mut curr_max_iter = max_iters[curr_map % max_iters.len()];
-    //         // println!("curr max iter {} {} {:?}", curr_max_iter, curr_map % max_iters.len(), max_iters);
-    //         let mut go = steps_list.chars().cycle().skip(curr_max_iter);
-    //         while !key.ends_with('Z') || max_iters.iter().max().unwrap() > &curr_max_iter {
-    //             let paths = map.get(key).unwrap();
-    //             *key = match go.next().unwrap() {
-    //                 'L' => paths.0,
-    //                 'R' => paths.1,
-    //                 _ => panic!("Wrong character")
-    //             };
-    //             curr_max_iter += 1;
-    //             if curr_max_iter % 10000000 == 0 {
-    //                 println!("curr map {curr_map} curr step {curr_max_iter}... [time taken {}ms]", time.elapsed().as_millis());
-    //             }
-    //         }
-    //         max_iters[curr_map] = curr_max_iter;
-    //         curr_map += 1;
-    //         // println!("first stop for {curr_map} {key} {} [time taken {}ms]", curr_max_iter, time.elapsed().as_millis());
-    //     }
-    //     // println!("after one loop {:?}", max_iters)
-    // }
-
-    // interesting idea v2
-    // let mut max_iters: Vec<usize> = Vec::from_iter(std::iter::repeat(0).take(curr_nodes.len()));
-    // let mut curr_map: usize = 0;
-    // while curr_map < max_iters.len() {
-    //     let key = &mut curr_nodes[curr_map];
-    //     let mut curr_max_iter = max_iters[curr_map % max_iters.len()];
-    //     // println!("curr max iter {} {} {:?}", curr_max_iter, curr_map % max_iters.len(), max_iters);
-    //     let mut go = steps_list.chars().cycle().skip(curr_max_iter);
-    //     while !key.ends_with('Z') || max_iters.iter().max().unwrap() > &curr_max_iter {
-    //         let paths = map.get(key).unwrap();
-    //         *key = match go.next().unwrap() {
-    //             'L' => paths.0,
-    //             'R' => paths.1,
-    //             _ => panic!("Wrong character")
-    //         };
-    //         curr_max_iter += 1;
-    //         if curr_max_iter % 10000000 == 0 {
-    //             println!("curr map {curr_map} curr step {curr_max_iter}... [time taken {}ms]", time.elapsed().as_millis());
-    //         }
-    //     }
-    //     max_iters[curr_map] = curr_max_iter;
-    //     if curr_map > 0 && max_iters[curr_map-1] != curr_max_iter {
-    //         curr_map -= 1;
-    //     } else {
-    //         curr_map += 1;
-    //     }
-    //     println!("first stop for {curr_map} {key} {} [time taken {}ms]", curr_max_iter, time.elapsed().as_millis());
-    // };
+    let mut current_score = first_end_occur[0];
+    for i in 1..first_end_occur.len() {
+        current_score = lcm(first_end_occur[i], current_score);
+    }
         
-    print!("the result is {} [time taken {}ms]", curr_step, time.elapsed().as_millis());
+    print!("the result is {} [time taken {}ms]", current_score, time.elapsed().as_millis());
+}
+
+fn lcm(first: usize, second: usize) -> usize {
+    first * second / gcd(first, second)
+}
+
+fn gcd(first: usize, second: usize) -> usize {
+    let mut bigger = first.max(second);
+    let mut smaller = first.min(second);
+
+    loop {
+        let rem = bigger % smaller;
+        if rem == 0 {
+            return smaller;
+        }
+        (bigger, smaller) = (smaller, rem);
+    }
 }
