@@ -9,6 +9,7 @@ mod day5;
 mod day6;
 mod day7;
 mod day8;
+mod day9;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -39,6 +40,8 @@ fn main() {
                 "7-2" => day7::day7_2(filename),
                 "8-1" => day8::day8_1(filename),
                 "8-2" => day8::day8_2(filename),
+                "9-1" => day9::day9_1(filename),
+                "9-2" => day9::day9_2(filename),
                 _ => panic!("unknown argument was provided")
             }
         }
