@@ -43,7 +43,7 @@ fn record_matches_damaged(record_no_questions: &str, damaged: &Vec<usize>) -> bo
     return replaced.len() == damaged.len() && replaced.iter().zip(damaged).all(|(el1, el2)| el1 == el2);
 }
 
-fn get_all_len_permutations(question_mark_count: usize) -> Vec<String> {
+fn _get_all_len_permutations(question_mark_count: usize) -> Vec<String> {
     let mut possible_permutations: Vec<String> = Vec::new();
     for num_of_broken in 0..=question_mark_count {
         let mut positions: Vec<usize> = Vec::from_iter(0..num_of_broken);
