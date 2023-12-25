@@ -10,7 +10,6 @@ pub fn day16_1(filename: String) {
     let file = read_file(&filename_l);
     
     let time = Instant::now();
-    let mut result = 0;
     let mut tile_map: Vec<String> = Vec::new();
     for (_, line) in file.lines().enumerate() {
         tile_map.push(String::from(line));
@@ -96,7 +95,7 @@ pub fn day16_1(filename: String) {
         }
     }
     let unique = get_unique_positions(&seen);
-    result = unique.len();
+    let result = unique.len();
 
     // _print_energized(tile_map, unique);
 
