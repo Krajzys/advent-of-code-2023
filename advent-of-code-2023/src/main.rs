@@ -1,6 +1,7 @@
 use std::env;
 
 mod util;
+mod direction;
 mod day1;
 mod day2;
 mod day3;
@@ -18,6 +19,7 @@ mod day14;
 mod day15;
 mod day16;
 mod day17;
+mod day18;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -66,6 +68,8 @@ fn main() {
                 "16-2" => day16::day16_2(filename),
                 "17-1" => day17::day17_1(filename),
                 "17-2" => day17::day17_2(filename),
+                "18-1" => day18::day18_1(filename),
+                "18-2" => day18::day18_2(filename),
                 _ => panic!("unknown argument was provided")
             }
         }
